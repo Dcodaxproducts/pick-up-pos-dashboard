@@ -87,14 +87,14 @@ const App = () => {
               </PathLogout>
             }
           />
-          <Route
+          {/* <Route
             path='/welcome'
             element={
               <WelcomeLayout>
                 <Welcome />
               </WelcomeLayout>
             }
-          />
+          /> */}
           <Route
             path='/installation'
             element={
@@ -111,7 +111,9 @@ const App = () => {
               </ProtectedRoute>
             }
           >
-            <Route path='/' element={<Navigate to='dashboard' />} />
+            {/* <Route path='/' element={<Navigate to='dashboard' />} /> */}
+            <Route index element={<Navigate to='dashboard' />} />
+
             {AllRoutes.map(({ path, component: Component }) => (
               <Route key={path} path={path} element={<Component />} />
             ))}

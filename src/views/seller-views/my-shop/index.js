@@ -9,40 +9,53 @@ import {
   Row,
   Spin,
   Switch,
+  Divider,
+  Typography,
+  Space,
 } from 'antd';
+import { EditOutlined } from '@ant-design/icons';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+
 import shopService from '../../../services/seller/shop';
 import getImage from '../../../helpers/getImage';
+import numberToPrice from '../../../helpers/numberToPrice';
 import { WEBSITE_URL } from '../../../configs/app-global';
-import { EditOutlined } from '@ant-design/icons';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import {
   addMenu,
   disableRefetch,
   setRefetch,
 } from '../../../redux/slices/menu';
-import { useTranslation } from 'react-i18next';
 import { fetchMyShop } from '../../../redux/slices/myShop';
-import numberToPrice from '../../../helpers/numberToPrice';
 import useDemo from '../../../helpers/useDemo';
+
+const { Title, Text } = Typography;
 
 export default function MyShop() {
   const { t } = useTranslation();
   const [statusLoading, setStatusLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { myShop } = useSelector((state) => state.myShop, shallowEqual);
-  const { activeMenu } = useSelector((state) => state.menu, shallowEqual);
+
   const { myShop: data, loading } = useSelector(
     (state) => state.myShop,
     shallowEqual,
   );
+  const { activeMenu } = useSelector((state) => state.menu, shallowEqual);
   const { defaultCurrency } = useSelector(
     (state) => state.currency,
     shallowEqual,
   );
   const { user } = useSelector((state) => state.auth, shallowEqual);
   const { isDemo, demoShop } = useDemo();
+
+  useEffect(() => {
+    if (activeMenu.refetch) {
+      dispatch(fetchMyShop());
+      dispatch(disableRefetch(activeMenu));
+    }
+  }, [activeMenu.refetch]);
 
   const goToEdit = () => {
     dispatch(
@@ -56,137 +69,122 @@ export default function MyShop() {
     navigate(`/my-shop/edit`);
   };
 
-  useEffect(() => {
-    if (activeMenu.refetch) {
-      dispatch(fetchMyShop());
-      dispatch(disableRefetch(activeMenu));
-    }
-  }, [activeMenu.refetch]);
-
-  function workingStatusChange() {
+  const workingStatusChange = () => {
     setStatusLoading(true);
     shopService
       .setWorkingStatus()
       .then(() => dispatch(setRefetch(activeMenu)))
       .finally(() => setStatusLoading(false));
-  }
+  };
 
-  function copyToClipboard() {
+  const copyToClipboard = () => {
     const text = WEBSITE_URL + '/invite/' + data.uuid;
     navigator.clipboard.writeText(text);
     message.success(t('copied.to.clipboard'));
-  }
+  };
 
   return (
     <Card
-      title={t('my.shop')}
+      title={<Title level={4}>{t('my.shop')}</Title>}
       extra={
-        user?.role !== 'seller' ? null : (
-          <Button type='primary' icon={<EditOutlined />} onClick={goToEdit}>
+        user?.role === 'seller' && (
+          <Button icon={<EditOutlined />} type='primary' onClick={goToEdit}>
             {t('shop.edit')}
           </Button>
         )
       }
     >
-      {!loading ? (
-        <Row gutter={12}>
-          <Col span={20}>
-            <div className='position-relative'>
-              <Descriptions bordered>
-                <Descriptions.Item label={t('shop.name')} span={2}>
-                  {data.translation?.title}
-                </Descriptions.Item>
-                <Descriptions.Item label={t('phone')} span={2}>
-                  {data.phone}
-                </Descriptions.Item>
-                <Descriptions.Item label={t('shop.address')} span={4}>
-                  {data.translation?.address}
-                </Descriptions.Item>
-                <Descriptions.Item label={t('tax')} span={2}>
-                  {data.tax}
-                </Descriptions.Item>
-                <Descriptions.Item label={t('takeaway.tax')} span={2}>
-                  {data.takeaway_tax}
-                </Descriptions.Item>
-                <Descriptions.Item label={t('background.image')} span={2}>
-                  {data.background_img ? (
-                    <Image
-                      width={200}
-                      src={getImage(data.background_img)}
-                      alt={'shop'}
-                    />
-                  ) : (
-                    ''
-                  )}
-                </Descriptions.Item>
-                <Descriptions.Item label={t('logo.image')} span={2}>
-                  {data.logo_img ? (
-                    <Image
-                      width={200}
-                      src={getImage(data.logo_img)}
-                      alt={'shop'}
-                    />
-                  ) : (
-                    ''
-                  )}
-                </Descriptions.Item>
-                <Descriptions.Item label={t('open')} span={2}>
-                  <Switch
-                    name='open'
-                    defaultChecked={data.open}
-                    onChange={workingStatusChange}
-                    disabled={isDemo && data.id == demoShop}
-                  />
-                </Descriptions.Item>
-
-                {/* <Descriptions.Item label={t('invitation.link')} span={2}>
-                  <Button type='link' onClick={copyToClipboard}>
-                    {t('copy.invitation.link')}
-                  </Button>
-                </Descriptions.Item> */}
-                <Descriptions.Item label={t('wallet')} span={2}>
-                  {numberToPrice(
-                    data.seller?.wallet?.price,
-                    defaultCurrency?.symbol,
-                    defaultCurrency?.symbol,
-                  )}
-                </Descriptions.Item>
-              </Descriptions>
-              {data.subscription ? (
-                <Descriptions
-                  title={t('subscription')}
-                  bordered
-                  className='mt-5'
-                >
-                  <Descriptions.Item label={t('type')} span={3}>
-                    {data.subscription?.type}
-                  </Descriptions.Item>
-                  <Descriptions.Item label={t('price')} span={3}>
-                    {numberToPrice(
-                      data.subscription?.price,
-                      defaultCurrency?.symbol,
-                      defaultCurrency?.symbol,
-                    )}
-                  </Descriptions.Item>
-                  <Descriptions.Item label={t('expired.at')} span={3}>
-                    {data.subscription?.expired_at}
-                  </Descriptions.Item>
-                </Descriptions>
-              ) : (
-                ''
-              )}
+      {loading ? (
+        <div className='d-flex justify-content-center align-items-center py-5'>
+          <Spin size='large' />
+        </div>
+      ) : (
+        <Space direction='vertical' size='large' style={{ width: '100%' }}>
+          <Descriptions bordered column={2} size='middle'>
+            <Descriptions.Item label={t('shop.name')}>
+              {data.translation?.title}
+            </Descriptions.Item>
+            <Descriptions.Item label={t('phone')}>
+              {data.phone}
+            </Descriptions.Item>
+            <Descriptions.Item label={t('shop.address')} span={2}>
+              {data.translation?.address}
+            </Descriptions.Item>
+            <Descriptions.Item label={t('tax')}>{data.tax}</Descriptions.Item>
+            <Descriptions.Item label={t('takeaway.tax')}>
+              {data.takeaway_tax}
+            </Descriptions.Item>
+            <Descriptions.Item label={t('wallet')}>
+              <Text strong>
+                {numberToPrice(
+                  data.seller?.wallet?.price,
+                  defaultCurrency?.symbol,
+                )}
+              </Text>
+            </Descriptions.Item>
+            <Descriptions.Item label={t('open')}>
+              <Switch
+                defaultChecked={data.open}
+                onChange={workingStatusChange}
+                disabled={isDemo && data.id == demoShop}
+              />
               {statusLoading && (
-                <div className='loader'>
-                  <Spin />
+                <div className='ml-2 d-inline-block'>
+                  <Spin size='small' />
                 </div>
               )}
-            </div>
-          </Col>
-        </Row>
-      ) : (
-        <div className='d-flex justify-content-center align-items-center'>
-          <Spin size='large' className='py-5' />
-        </div>
+            </Descriptions.Item>
+          </Descriptions>
+
+          <Divider orientation='left'>{t('shop.images')}</Divider>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} md={12}>
+              <Text>{t('background.image')}</Text>
+              <div>
+                {data.background_img ? (
+                  <Image
+                    width='100%'
+                    src={getImage(data.background_img)}
+                    alt='Background'
+                    style={{ maxHeight: 200, objectFit: 'cover' }}
+                  />
+                ) : (
+                  <Text type='secondary'>{t('no.image.available')}</Text>
+                )}
+              </div>
+            </Col>
+            <Col xs={24} md={12}>
+              <Text>{t('logo.image')}</Text>
+              <div>
+                {data.logo_img ? (
+                  <Image width={150} src={getImage(data.logo_img)} alt='Logo' />
+                ) : (
+                  <Text type='secondary'>{t('no.image.available')}</Text>
+                )}
+              </div>
+            </Col>
+          </Row>
+
+          {data.subscription && (
+            <>
+              <Divider orientation='left'>{t('subscription')}</Divider>
+              <Descriptions bordered column={1} size='middle'>
+                <Descriptions.Item label={t('type')}>
+                  {data.subscription.type}
+                </Descriptions.Item>
+                <Descriptions.Item label={t('price')}>
+                  {numberToPrice(
+                    data.subscription.price,
+                    defaultCurrency?.symbol,
+                  )}
+                </Descriptions.Item>
+                <Descriptions.Item label={t('expired.at')}>
+                  {data.subscription.expired_at}
+                </Descriptions.Item>
+              </Descriptions>
+            </>
+          )}
+        </Space>
       )}
     </Card>
   );

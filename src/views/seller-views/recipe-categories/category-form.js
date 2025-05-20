@@ -46,51 +46,52 @@ export default function RecipeCategoryForm({ form, handleSubmit, error }) {
       form={form}
     >
       <Row gutter={12}>
-        <Col span={12}>
-          {languages.map((item, index) => (
-            <Form.Item
-              key={item.title + index}
-              label={t('name')}
-              name={`title[${item.locale}]`}
-              help={
-                error
-                  ? error[`title.${defaultLang}`]
-                    ? error[`title.${defaultLang}`][0]
-                    : null
-                  : null
-              }
-              validateStatus={error ? 'error' : 'success'}
-              rules={[
-                {
-                  required: item.locale === defaultLang,
-                  message: t('required'),
-                },
-              ]}
-              hidden={item.locale !== defaultLang}
-            >
-              <Input placeholder={t('name')} />
-            </Form.Item>
-          ))}
-        </Col>
+      <Col span={12}>
+  {languages.map((item, index) => (
+    <Form.Item
+      key={item.title + index}
+      label={t('name')}
+      name={['title', item.locale]}
+      help={
+        error
+          ? error[`title.${defaultLang}`]
+            ? error[`title.${defaultLang}`][0]
+            : null
+          : null
+      }
+      validateStatus={error ? 'error' : 'success'}
+      rules={[
+        {
+          required: item.locale === defaultLang,
+          message: t('required'),
+        },
+      ]}
+      hidden={item.locale !== defaultLang}
+    >
+      <Input placeholder={t('name')} />
+    </Form.Item>
+  ))}
+</Col>
 
-        <Col span={12}>
-          {languages.map((item, index) => (
-            <Form.Item
-              key={item.locale + index}
-              label={t('description')}
-              name={`description[${item.locale}]`}
-              rules={[
-                {
-                  required: item.locale === defaultLang,
-                  message: t('required'),
-                },
-              ]}
-              hidden={item.locale !== defaultLang}
-            >
-              <TextArea rows={4} />
-            </Form.Item>
-          ))}
-        </Col>
+<Col span={12}>
+  {languages.map((item, index) => (
+    <Form.Item
+      key={item.locale + index}
+      label={t('description')}
+      name={['description', item.locale]}
+      rules={[
+        {
+          required: item.locale === defaultLang,
+          message: t('required'),
+        },
+      ]}
+      hidden={item.locale !== defaultLang}
+    >
+      <TextArea rows={4} />
+    </Form.Item>
+  ))}
+</Col>
+
 
         <Col span={12}>
           <Form.Item

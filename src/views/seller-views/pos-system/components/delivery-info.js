@@ -79,11 +79,11 @@ const DeliveryInfo = ({ form }) => {
   });
 
   const delivery = [
-    {
-      label: t('dine.in'),
-      value: 'dine_in',
-      key: 2,
-    },
+    // {
+    //   label: t('dine.in'),
+    //   value: 'dine_in',
+    //   key: 2,
+    // },
     {
       label: t('delivery'),
       value: 'delivery',

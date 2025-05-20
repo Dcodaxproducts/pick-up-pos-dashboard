@@ -128,11 +128,11 @@ export default function SellerSubscriptions() {
                           })}
                         </div>
                       </div>
-                      <div className='mt-3 text-center'>
+                      {/* <div className='mt-3 text-center'>
                         <Button type='default' onClick={() => setModal(elm)}>
                           {t('purchase')}
                         </Button>
-                      </div>
+                      </div> */}
                     </div>
                   </Badge.Ribbon>
                 </Col>

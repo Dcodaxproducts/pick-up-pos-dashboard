@@ -3,10 +3,13 @@ export default function getTranslationFields(
   values,
   field = 'title',
 ) {
-  const list = languages?.map((item) => ({
-    [item?.locale]: !values[`${field}[${item?.locale}]`]
-      ? undefined
-      : values[`${field}[${item?.locale}]`],
-  }));
-  return Object.assign({}, ...list);
+  const result = {};
+  languages?.forEach((item) => {
+    const locale = item?.locale;
+    const fieldValue = values?.[field]?.[locale];
+    if (fieldValue !== undefined) {
+      result[locale] = fieldValue;
+    }
+  });
+  return result;
 }
