@@ -1607,18 +1607,18 @@ const sellerRoutes = [
         id: 'subscription',
         children: [],
       },
-      {
-        name: 'ad.packages',
-        id: 'ad_packages',
-        url: 'seller/advert',
-        icon: 'MdOutlineTableBar',
-      },
-      {
-        name: 'ads',
-        id: 'shop_ads',
-        url: 'seller/shop-ads',
-        icon: 'appStore',
-      },
+      // {
+      //   name: 'ad.packages',
+      //   id: 'ad_packages',
+      //   url: 'seller/advert',
+      //   icon: 'MdOutlineTableBar',
+      // },
+      // {
+      //   name: 'ads',
+      //   id: 'shop_ads',
+      //   url: 'seller/shop-ads',
+      //   icon: 'appStore',
+      // },
     ],
   },
   {
@@ -1633,13 +1633,13 @@ const sellerRoutes = [
         id: 'seller_stories',
         children: [],
       },
-      {
-        name: 'brands',
-        icon: 'appStoreAdd',
-        url: 'seller/brands',
-        id: 'brands',
-        children: [],
-      },
+      // {
+      //   name: 'brands',
+      //   icon: 'appStoreAdd',
+      //   url: 'seller/brands',
+      //   id: 'brands',
+      //   children: [],
+      // },
     ],
   },
   {

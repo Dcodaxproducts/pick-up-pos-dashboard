@@ -124,7 +124,7 @@ export default function CategoryForm({ form, handleSubmit, request = true }) {
           {languages.map((item) => (
             <Form.Item
               label={t('name')}
-              name={`title[${item?.locale || 'en'}]`}
+              name={['title', item?.locale || 'en']}
               key={item?.locale}
               hidden={item?.locale !== defaultLang}
               rules={[
@@ -149,7 +149,7 @@ export default function CategoryForm({ form, handleSubmit, request = true }) {
           {languages.map((item) => (
             <Form.Item
               label={t('description')}
-              name={`description[${item?.locale || 'en'}]`}
+              name={['description', item?.locale || 'en']}
               key={item?.locale}
               hidden={item?.locale !== defaultLang}
               rules={[
@@ -184,7 +184,7 @@ export default function CategoryForm({ form, handleSubmit, request = true }) {
             <Form.Item
               label={t('parent.category')}
               name='parent_id'
-              rules={[{ required: true, message: t('required') }]}
+              // rules={[{ required: true, message: t('required') }]}
             >
               <DebounceSelect fetchOptions={fetchUserCategoryList} />
             </Form.Item>
